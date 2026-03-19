@@ -5,6 +5,7 @@
 #include<unistd.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include<string.h>
 #include<sys/ioctl.h>
 
 //defines
@@ -14,6 +15,8 @@
 
 struct editorConfig {
   struct termios orig_termios;
+  int screenrows;  
+  int screencols;  
 };
 struct editorConfig E;
 
@@ -66,12 +69,35 @@ int getWindowSize(int *rows, int *cols) {
 	return 0;
  }
 }
+// append buffer
+struct abuf {
+	char *b;
+	int len;
+};
+#define ABUF_INIT {NULL, 0}
+void abAppend(struct abuf *ab, const char *s, int len) {
+	char *new = realloc(ab->b, ab->len + len);
+
+	if (new == NULL) return;
+	memcpy(&new[ab->len], s, len);
+	ab->b = new;
+	ab->len += len;
+}
+
+void abFree(struct abuf *ab) {
+	free(ab->b);
+}
+
 // output
 
 void editorDrawRows(){ //function handles each row of the buffer of the text being edited
 	int y;
 	for (y = 0; y < 24; y++) {
-	     write(STDOUT_FILENO, "~\r\n", 3);
+	     write(STDOUT_FILENO, "~", 1);
+
+	     if (y < 24 - 1) {
+		     write(STDOUT_FILENO, "\r\n", 2);
+	     }
 	}
 }
 
@@ -95,10 +121,14 @@ void editorProcessKeypress(){
 		break;
 	}
 }
-        //   init 
+
+//   init 
 int main (){
     enableRawMode();
     
+    if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
+        die("getWindowSize");
+    }
     
     while (1) {
     editorRefreshScreen();

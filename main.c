@@ -45,7 +45,12 @@ char editorReadKey(){
 	}
 	return c;
 }
-        //input
+// output
+void editorRefreshScreen(){ //\x1b is an escape character
+	write (STDOUT_FILENO, "\x1b[2J", 4); // write 4 bytes out to the terminal
+	write (STDOUT_FILENO, "\x1b[H", 3); //reposition the cursor
+}
+//input
 void editorProcessKeypress(){
 	char c = editorReadKey();
 
@@ -61,7 +66,7 @@ int main (){
     
     
     while (1) {
-      
+        editorRefreshScreen();
 	editorReadKey();
 
 	}

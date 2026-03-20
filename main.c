@@ -93,10 +93,20 @@ void abFree(struct abuf *ab) {
 void editorDrawRows(){ //function handles each row of the buffer of the text being edited
 	int y;
 	for (y = 0; y < 24; y++) {
-	     write(STDOUT_FILENO, "~", 1);
+	     if (y == 24 /3) {
+		char welcome[80];
+		int welcomelen = snprintf(welcome, sizeof(welcome),
+			"Kilo editor -- version %s", KILO_VERSION);
+		if (welcomelen > 24 ) welcomlen = 24;
+		abAppend(ab, welcome, welcomelen);
+	     } else {
+		abAppend(ab, "~", 1);
+	     }
+
+	     abAppend(ab, "\x1b[K, 3");
 
 	     if (y < 24 - 1) {
-		     write(STDOUT_FILENO, "\r\n", 2);
+		     AbAppend(ab, "\r\n", 2);
 	     }
 	}
 }

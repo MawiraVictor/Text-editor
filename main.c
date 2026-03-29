@@ -94,6 +94,8 @@ void editorDrawRows(struct *ab){ //function handles each row of the buffer of th
 	int y;
 	for (y = 0; y < 24; y++) {
 		abAppend(ab, "~", 1);
+		abAppend(&ab, "\x1b[KJ", 3); 
+
 	     if (y == 24 /3) { // we will assume a fixed text editor winngow size of 24 by 24
 			abAppend(ab, "\r\n", 2);
 
@@ -118,7 +120,6 @@ void editorRefreshScreen(){ //\x1b is an escape character
 	struct abuf ab = ABUF_INIT;
 	
 	abAppend(&ab, "\x1b[?25l", 6);
-	abAppend(&ab, "\x1b[2J", 4); // write 4 bytes out to the terminal
 	abAppend(&ab, "\x1b[H", 3); //reposition the cursor
 	
 	editorDrawRows(&ab);

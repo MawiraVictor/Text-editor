@@ -90,10 +90,13 @@ void abFree(struct abuf *ab) {
 
 // output
 
-void editorDrawRows(){ //function handles each row of the buffer of the text being edited
+void editorDrawRows(struct *ab){ //function handles each row of the buffer of the text being edited
 	int y;
 	for (y = 0; y < 24; y++) {
-	     if (y == 24 /3) {
+		abAppend(ab, "~", 1);
+	     if (y == 24 /3) { // we will assume a fixed text editor winngow size of 24 by 24
+			abAppend(ab, "\r\n", 2);
+
 		char welcome[80];
 		int welcomelen = snprintf(welcome, sizeof(welcome),
 			"Kilo editor -- version %s", KILO_VERSION);
@@ -112,12 +115,15 @@ void editorDrawRows(){ //function handles each row of the buffer of the text bei
 }
 
 void editorRefreshScreen(){ //\x1b is an escape character
-	write (STDOUT_FILENO, "\x1b[2J", 4); // write 4 bytes out to the terminal
-	write (STDOUT_FILENO, "\x1b[H", 3); //reposition the cursor
+	struct abuf ab = ABUF_INIT;
 	
-	editorDrawRows();
+	abAppend(&ab, "\x1b[2J", 4); // write 4 bytes out to the terminal
+	abAppend(&ab, "\x1b[H", 3); //reposition the cursor
+	
+	editorDrawRows(&ab);
 
-	write(STDOUT_FILENO, "\x1b[H", 3);
+	write(STDOUT_FILENO, ab.b, ab.len);
+	abFree(&ab);
 }
 //input
 void editorProcessKeypress(){

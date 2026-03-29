@@ -117,11 +117,13 @@ void editorDrawRows(struct *ab){ //function handles each row of the buffer of th
 void editorRefreshScreen(){ //\x1b is an escape character
 	struct abuf ab = ABUF_INIT;
 	
+	abAppend(&ab, "\x1b[?25l", 6);
 	abAppend(&ab, "\x1b[2J", 4); // write 4 bytes out to the terminal
 	abAppend(&ab, "\x1b[H", 3); //reposition the cursor
 	
 	editorDrawRows(&ab);
 
+	abAppend(&ab, "\x1b[?25h", 6);
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
 }

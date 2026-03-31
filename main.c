@@ -180,17 +180,18 @@ void initEditor() {
 	if (getWindowSize(&E.screenrows, &E.screencols) == -1) die("getWindowSize");
 }
 int main (){
-    enableRawMode();
-    
-    if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
-        die("getWindowSize");
+ enableRawMode();
+ 
+  while (1) {
+    char c = '\0';
+    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) die("read");
+    if (iscntrl(c)) {
+      printf("%d\r\n", c);
+    } else {
+      printf("%d ('%c')\r\n", c, c);
     }
-    
-    while (1) {
-    editorRefreshScreen();
-	  editorProcessKeypress();
-
-	}
+    if (c == CTRL_KEY('q')) break;
+  }
 
     return 0;
 }

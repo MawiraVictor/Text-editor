@@ -145,6 +145,9 @@ void editorRefreshScreen(){ //\x1b is an escape character
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
 }
+void editorRefreshScreen(){
+	write(STDIN_FILENO, "\x1b[2J", 4)
+}
 //input
 void editorProcessKeypress(){
 	char c  = editorReadKey();
@@ -203,8 +206,8 @@ int main (){
  enableRawMode();
  
   while (1) {
-    char c = '\0';
-    editorConfig();
+    editorRefreshScreen();
+    editorProcessKeypress();
   }
 
     return 0;

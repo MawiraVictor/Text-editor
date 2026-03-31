@@ -146,7 +146,9 @@ void editorRefreshScreen(){ //\x1b is an escape character
 	abFree(&ab);
 }
 void editorRefreshScreen(){
-	write(STDIN_FILENO, "\x1b[2J", 4)
+	write(STDIN_FILENO, "\x1b[2J", 4);
+	write(STDOUT_FILENO, "\x1b[H", 3);
+
 }
 //input
 void editorProcessKeypress(){

@@ -51,6 +51,16 @@ void enableRawMode(){
 
     if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
+
+char editorReadKey() {
+	int nread;
+	char c;
+	while ((nread = read(STDERR_FILENO, &c, 1)) != 1) {
+		if (mread == -1 && errno != EAGAIN) die("read");
+	}
+	return c;
+}
+
 char editorReadKey(){
 	int nread;
 	char c;
@@ -136,6 +146,16 @@ void editorRefreshScreen(){ //\x1b is an escape character
 	abFree(&ab);
 }
 //input
+void editorProcessKeypress(){
+	char c  = editorReadKey();
+
+	switch (c) {
+		case CTRL_KEY('q'):
+		exit(0);
+		break;
+
+	}
+}
 void editorMoveCursor(char key) {
   switch (key) {
     case 'a':
@@ -184,13 +204,7 @@ int main (){
  
   while (1) {
     char c = '\0';
-    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) die("read");
-    if (iscntrl(c)) {
-      printf("%d\r\n", c);
-    } else {
-      printf("%d ('%c')\r\n", c, c);
-    }
-    if (c == CTRL_KEY('q')) break;
+    editorConfig();
   }
 
     return 0;
